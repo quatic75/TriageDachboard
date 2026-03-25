@@ -33,6 +33,19 @@ catch (InvalidOperationException)
 
 var app = builder.Build();
 
+// Apply migrations and seed data (skip for in-memory databases used in tests)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    
+    // Only run migrations and seeding if using a relational database provider
+    if (db.Database.IsRelational())
+    {
+        await db.Database.MigrateAsync();
+        await DbSeeder.SeedAsync(db);
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
