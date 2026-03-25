@@ -46,6 +46,7 @@ app.MapGet("/weatherforecast", () =>
 
 // Register failure endpoints
 app.MapFailureEndpoints();
+app.MapFailureActionEndpoints();
 
 app.Run();
 
