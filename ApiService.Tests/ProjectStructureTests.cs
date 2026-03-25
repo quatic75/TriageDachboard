@@ -48,16 +48,16 @@ public class ProjectStructureTests
     {
         var projectPath = Path.Combine(_workspaceRoot, "AppHost", "AppHost.csproj");
         var doc = XDocument.Load(projectPath);
-        
+
         // Check for either explicit package reference or Aspire SDK
         var packageReferences = doc.Descendants("PackageReference")
             .Where(x => x.Attribute("Include")?.Value == "Aspire.Hosting.AppHost")
             .ToList();
-        
+
         var sdkAttribute = doc.Root?.Attribute("Sdk")?.Value;
         bool hasAspireSdk = sdkAttribute?.Contains("Aspire.AppHost.Sdk") == true;
-        
-        Assert.True(packageReferences.Any() || hasAspireSdk, 
+
+        Assert.True(packageReferences.Any() || hasAspireSdk,
             "AppHost should reference Aspire.Hosting.AppHost package or use Aspire.AppHost.Sdk");
     }
 
@@ -69,7 +69,7 @@ public class ProjectStructureTests
         var projectReferences = doc.Descendants("ProjectReference")
             .Where(x => x.Attribute("Include")?.Value.Contains("ApiService.csproj") == true)
             .ToList();
-        
+
         Assert.NotEmpty(projectReferences);
     }
 
@@ -81,7 +81,7 @@ public class ProjectStructureTests
         var projectReferences = doc.Descendants("ProjectReference")
             .Where(x => x.Attribute("Include")?.Value.Contains("WorkerService.csproj") == true)
             .ToList();
-        
+
         Assert.NotEmpty(projectReferences);
     }
 
@@ -93,7 +93,7 @@ public class ProjectStructureTests
         var projectReferences = doc.Descendants("ProjectReference")
             .Where(x => x.Attribute("Include")?.Value.Contains("ApiService.csproj") == true)
             .ToList();
-        
+
         Assert.NotEmpty(projectReferences);
     }
 
@@ -113,7 +113,7 @@ public class ProjectStructureTests
             var doc = XDocument.Load(projectPath);
             var targetFramework = doc.Descendants("TargetFramework")
                 .FirstOrDefault()?.Value;
-            
+
             Assert.Equal("net8.0", targetFramework);
         }
     }
