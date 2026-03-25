@@ -22,8 +22,19 @@ public class FailureActionsTests : IClassFixture<WebApplicationFactory<Program>>
         {
             builder.ConfigureServices(services =>
             {
-                // Remove the existing DbContext registration
-                services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+                // Remove all DbContext-related registrations (including Aspire's pooling)
+                var descriptorsToRemove = services
+                    .Where(d => d.ServiceType.IsGenericType && 
+                                d.ServiceType.GetGenericArguments().Any(t => t == typeof(ApplicationDbContext)))
+                    .ToList();
+                
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    services.Remove(descriptor);
+                }
+                
+                // Also remove non-generic ApplicationDbContext
+                services.RemoveAll<ApplicationDbContext>();
                 
                 // Add a test-specific in-memory database
                 services.AddDbContext<ApplicationDbContext>(options =>

@@ -9,9 +9,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseInMemoryDatabase("TriageDashboard"));
+// Add DbContext with PostgreSQL via Aspire service discovery (if available)
+// In test environments, this will be overridden by the test configuration
+try
+{
+    if (builder.Environment.EnvironmentName != "Testing")
+    {
+        builder.AddNpgsqlDbContext<ApplicationDbContext>("triagedb");
+    }
+    else
+    {
+        // Fallback to InMemory for testing
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseInMemoryDatabase("TriageDashboard"));
+    }
+}
+catch (InvalidOperationException)
+{
+    // Fallback to InMemory if Aspire services not available (e.g., in tests)
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseInMemoryDatabase("TriageDashboard"));
+}
 
 var app = builder.Build();
 
