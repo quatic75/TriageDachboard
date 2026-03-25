@@ -14,4 +14,9 @@ var apiService = builder.AddProject<Projects.ApiService>("apiservice")
 // Add worker service
 builder.AddProject<Projects.WorkerService>("workerservice");
 
+// Add Next.js dashboard
+var dashboard = builder.AddNpmApp("dashboard", "../Dashboard", "dev")
+                      .WithHttpEndpoint(port: 3000, env: "PORT")
+                      .WithEnvironment("NEXT_PUBLIC_API_URL", apiService.GetEndpoint("http"));
+
 builder.Build().Run();

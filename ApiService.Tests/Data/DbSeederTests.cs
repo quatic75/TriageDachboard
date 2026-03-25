@@ -78,4 +78,43 @@ public class DbSeederTests
         Assert.Single(failures);
         Assert.Equal("existing-run", failures[0].RunId);
     }
+
+    [Fact]
+    public async Task Seed_PopulatesJiraTicketDataForJiraCreatedRecords()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new ApplicationDbContext(options);
+
+        // Act
+        await DbSeeder.SeedAsync(context);
+
+        // Assert
+        var failures = await context.PipelineFailures.ToListAsync();
+        var jiraCreatedFailures = failures.Where(f => f.JiraCreated).ToList();
+        
+        // Verify all JiraCreated records have ticket ID and URL
+        Assert.All(jiraCreatedFailures, f =>
+        {
+            Assert.NotNull(f.JiraTicketId);
+            Assert.NotEmpty(f.JiraTicketId);
+            Assert.Matches(@"^TRIAGE-\d{4}$", f.JiraTicketId);
+            
+            Assert.NotNull(f.JiraTicketUrl);
+            Assert.NotEmpty(f.JiraTicketUrl);
+            Assert.StartsWith("https://jira.example.com/browse/", f.JiraTicketUrl);
+            Assert.Equal($"https://jira.example.com/browse/{f.JiraTicketId}", f.JiraTicketUrl);
+        });
+        
+        // Verify records without JiraCreated don't have ticket data
+        var nonJiraFailures = failures.Where(f => !f.JiraCreated).ToList();
+        Assert.All(nonJiraFailures, f =>
+        {
+            Assert.Null(f.JiraTicketId);
+            Assert.Null(f.JiraTicketUrl);
+        });
+    }
 }

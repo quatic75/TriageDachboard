@@ -9,6 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Add DbContext with PostgreSQL via Aspire service discovery (if available)
 // In test environments, this will be overridden by the test configuration
 try
@@ -37,12 +48,32 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     
     // Only run migrations and seeding if using a relational database provider
     if (db.Database.IsRelational())
     {
-        await db.Database.MigrateAsync();
-        await DbSeeder.SeedAsync(db);
+        // Retry logic for database connection (PostgreSQL may take time to start)
+        int retries = 10;
+        int delayMs = 2000;
+        
+        for (int i = 0; i < retries; i++)
+        {
+            try
+            {
+                logger.LogInformation("Attempting database migration (attempt {Attempt}/{MaxAttempts})...", i + 1, retries);
+                await db.Database.MigrateAsync();
+                await DbSeeder.SeedAsync(db);
+                logger.LogInformation("Database migration and seeding completed successfully");
+                break;
+            }
+            catch (Exception ex) when (i < retries - 1)
+            {
+                logger.LogWarning(ex, "Database migration failed (attempt {Attempt}/{MaxAttempts}). Retrying in {DelayMs}ms...", i + 1, retries, delayMs);
+                await Task.Delay(delayMs);
+                delayMs *= 2; // Exponential backoff
+            }
+        }
     }
 }
 
@@ -53,7 +84,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection in development to avoid CORS issues with redirects
+// app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors();
 
 var summaries = new[]
 {

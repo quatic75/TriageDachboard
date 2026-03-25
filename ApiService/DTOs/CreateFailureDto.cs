@@ -26,4 +26,8 @@ public class CreateFailureDto
     public string? SuggestedFix { get; set; }
 
     public string? SourceJson { get; set; }
+
+    public string? JiraTicketId { get; set; }
+
+    public string? JiraTicketUrl { get; set; }
 }

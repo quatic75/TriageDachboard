@@ -33,6 +33,10 @@ public class PipelineFailure
 
     public bool JiraCreated { get; set; }
 
+    public string? JiraTicketId { get; set; }
+
+    public string? JiraTicketUrl { get; set; }
+
     public bool RetryAttempted { get; set; }
 
     public FailureStatus Status { get; set; }

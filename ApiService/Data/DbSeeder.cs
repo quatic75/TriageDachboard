@@ -48,6 +48,8 @@ public static class DbSeeder
                 SourceJson = "{\"timeout\":30000,\"host\":\"db.example.com\"}",
                 Status = FailureStatus.Resolved,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1001",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1001",
                 RetryAttempted = true,
                 CreatedAt = baseDate.AddHours(-48),
                 UpdatedAt = baseDate.AddHours(-2)
@@ -64,6 +66,8 @@ public static class DbSeeder
                 SuggestedFix = "Initialize all required objects before test execution",
                 Status = FailureStatus.NeedsIntervention,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1002",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1002",
                 RetryAttempted = false,
                 CreatedAt = baseDate.AddHours(-5),
                 UpdatedAt = baseDate.AddHours(-1)
@@ -116,6 +120,8 @@ public static class DbSeeder
                 SourceJson = "{\"principal\":\"sp-deploy-prod\",\"resource\":\"rg-prod\",\"requiredRole\":\"Contributor\"}",
                 Status = FailureStatus.NeedsIntervention,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1003",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1003",
                 RetryAttempted = false,
                 CreatedAt = baseDate.AddHours(-24),
                 UpdatedAt = baseDate.AddHours(-20)
@@ -150,6 +156,8 @@ public static class DbSeeder
                 SourceJson = "{\"cve\":\"CVE-2023-12345\",\"severity\":\"High\",\"package\":\"log4net\",\"currentVersion\":\"2.0.10\",\"fixedVersion\":\"2.0.15\"}",
                 Status = FailureStatus.NeedsIntervention,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1004",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1004",
                 RetryAttempted = false,
                 CreatedAt = baseDate.AddDays(-1),
                 UpdatedAt = baseDate.AddHours(-6)
@@ -184,6 +192,8 @@ public static class DbSeeder
                 SourceJson = "{\"endpoint\":\"/api/users\",\"responseTime\":5432,\"threshold\":2000,\"method\":\"GET\"}",
                 Status = FailureStatus.Open,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1005",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1005",
                 RetryAttempted = false,
                 CreatedAt = baseDate.AddHours(-8),
                 UpdatedAt = baseDate.AddHours(-8)
@@ -201,6 +211,8 @@ public static class DbSeeder
                 SuggestedFix = "Review migration history and remove duplicate migration",
                 Status = FailureStatus.Resolved,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1006",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1006",
                 RetryAttempted = true,
                 CreatedAt = baseDate.AddDays(-3),
                 UpdatedAt = baseDate.AddDays(-2)
@@ -253,6 +265,8 @@ public static class DbSeeder
                 SourceJson = "{\"resource\":\"VirtualMachine\",\"quota\":\"vCPUs\",\"limit\":20,\"requested\":24}",
                 Status = FailureStatus.NeedsIntervention,
                 JiraCreated = true,
+                JiraTicketId = "TRIAGE-1007",
+                JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1007",
                 RetryAttempted = false,
                 CreatedAt = baseDate.AddHours(-6),
                 UpdatedAt = baseDate.AddHours(-5)

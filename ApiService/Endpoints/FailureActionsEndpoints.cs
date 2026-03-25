@@ -21,6 +21,8 @@ public static class FailureActionsEndpoints
             }
 
             failure.JiraCreated = true;
+            failure.JiraTicketId = $"TRIAGE-{Random.Shared.Next(1000, 9999)}";
+            failure.JiraTicketUrl = $"https://jira.example.com/browse/{failure.JiraTicketId}";
             failure.UpdatedAt = DateTime.UtcNow;
 
             await db.SaveChangesAsync();
@@ -81,6 +83,8 @@ public static class FailureActionsEndpoints
             SourceJson = failure.SourceJson,
             AutoHandled = failure.AutoHandled,
             JiraCreated = failure.JiraCreated,
+            JiraTicketId = failure.JiraTicketId,
+            JiraTicketUrl = failure.JiraTicketUrl,
             RetryAttempted = failure.RetryAttempted,
             Status = failure.Status.ToString(),
             CreatedAt = failure.CreatedAt,

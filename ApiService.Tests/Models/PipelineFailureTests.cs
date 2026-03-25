@@ -76,4 +76,44 @@ public class PipelineFailureTests
         Assert.True(Enum.IsDefined(typeof(FailureStatus), FailureStatus.Resolved));
         Assert.True(Enum.IsDefined(typeof(FailureStatus), FailureStatus.NeedsIntervention));
     }
+
+    [Fact]
+    public void JiraTicketFields_ShouldExistAndBeNullable()
+    {
+        // Arrange & Act - Get property info
+        var jiraTicketIdProperty = typeof(PipelineFailure).GetProperty(nameof(PipelineFailure.JiraTicketId));
+        var jiraTicketUrlProperty = typeof(PipelineFailure).GetProperty(nameof(PipelineFailure.JiraTicketUrl));
+        
+        // Assert - Verify properties exist
+        Assert.NotNull(jiraTicketIdProperty);
+        Assert.NotNull(jiraTicketUrlProperty);
+        
+        // Assert - Verify properties are nullable strings
+        Assert.Equal(typeof(string), Nullable.GetUnderlyingType(jiraTicketIdProperty.PropertyType) ?? jiraTicketIdProperty.PropertyType);
+        Assert.Equal(typeof(string), Nullable.GetUnderlyingType(jiraTicketUrlProperty.PropertyType) ?? jiraTicketUrlProperty.PropertyType);
+        
+        // Assert - Verify properties can be set
+        var failure = new PipelineFailure
+        {
+            RunId = "test-run",
+            PipelineName = "test-pipeline",
+            ErrorMessage = "test error",
+            JiraTicketId = "TRIAGE-1234",
+            JiraTicketUrl = "https://jira.example.com/browse/TRIAGE-1234"
+        };
+        
+        Assert.Equal("TRIAGE-1234", failure.JiraTicketId);
+        Assert.Equal("https://jira.example.com/browse/TRIAGE-1234", failure.JiraTicketUrl);
+    }
+
+    [Fact]
+    public void JiraTicketFields_ShouldBeNullByDefault()
+    {
+        // Arrange & Act
+        var failure = new PipelineFailure();
+
+        // Assert
+        Assert.Null(failure.JiraTicketId);
+        Assert.Null(failure.JiraTicketUrl);
+    }
 }

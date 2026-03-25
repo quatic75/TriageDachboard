@@ -15,4 +15,8 @@ public class UpdateFailureDto
     public string? SourceJson { get; set; }
 
     public string? Status { get; set; }
+
+    public string? JiraTicketId { get; set; }
+
+    public string? JiraTicketUrl { get; set; }
 }

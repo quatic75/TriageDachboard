@@ -93,6 +93,50 @@ public class FailureActionsTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task CreateJira_GeneratesTicketIdAndUrl()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        
+        // Seed test data
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        var failure = new PipelineFailure
+        {
+            RunId = "run-005",
+            PipelineName = "Build Pipeline",
+            ErrorMessage = "Build failed",
+            JiraCreated = false,
+            JiraTicketId = null,
+            JiraTicketUrl = null
+        };
+        
+        dbContext.PipelineFailures.Add(failure);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        var response = await client.PostAsync($"/failures/{failure.Id}/jira", null);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        
+        var updatedFailure = await response.Content.ReadFromJsonAsync<FailureDto>();
+        Assert.NotNull(updatedFailure);
+        Assert.True(updatedFailure.JiraCreated);
+        
+        // Verify ticket ID format: TRIAGE-{4 digits}
+        Assert.NotNull(updatedFailure.JiraTicketId);
+        Assert.Matches(@"^TRIAGE-\d{4}$", updatedFailure.JiraTicketId);
+        
+        // Verify ticket URL format
+        Assert.NotNull(updatedFailure.JiraTicketUrl);
+        Assert.StartsWith("https://jira.example.com/browse/", updatedFailure.JiraTicketUrl);
+        Assert.Equal($"https://jira.example.com/browse/{updatedFailure.JiraTicketId}", updatedFailure.JiraTicketUrl);
+    }
+
+
+    [Fact]
     public async Task Retry_FirstAttempt_SetsRetryAttempted()
     {
         // Arrange

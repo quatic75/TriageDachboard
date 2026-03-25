@@ -115,6 +115,8 @@ public static class FailureEndpoints
             SourceJson = failure.SourceJson,
             AutoHandled = failure.AutoHandled,
             JiraCreated = failure.JiraCreated,
+            JiraTicketId = failure.JiraTicketId,
+            JiraTicketUrl = failure.JiraTicketUrl,
             RetryAttempted = failure.RetryAttempted,
             Status = failure.Status.ToString(),
             CreatedAt = failure.CreatedAt,
